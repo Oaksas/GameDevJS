@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Catch ME </title>
+</head>
+<style>
+    body{
+        background-color: black;
+    }
+     canvas {
+        background-image: url("brick.jpg"); 
+        background-size: cover;
+             display: block;
+       margin: 0 auto; }
+</style>
+<body>
+
+<canvas id="myCanvas" width="1000" height="650"></canvas>
+
+<script>
+    
+    var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
+
+   function scoreDisplay(){
+    ctx.font="30px Comic Sans MS";
+ctx.fillStyle = "White";
+ctx.textAlign = "center";
+ctx.fillText("Score :" +score, canvas.width/2, 50);
+
+   }
+   function highScoreDisplay(){
+    ctx.font="30px Comic Sans MS";
+ctx.fillStyle = "White";
+ctx.textAlign = "center";
+ctx.fillText("Highscore :" +highscore, 850, 50);
+
+   }
+    
+
+var ballRadius = 20;
+var x = canvas.width/2;
+var y = canvas.height-30;
+var dx = 2;
+var dy = -2;
+var speed =10;
+var paddleHeight = 100;
+var paddleWidth = 20;
+var topPressed = false;
+var bottomPressed = false;
+
+var highscore =localStorage.getItem('Highscore') ;
+var paddleY = 0;
+var paddleAIY = 0;
+
+var score = 0;
+if((localStorage.getItem('Highscore') == null)){
+    highscore =0;
+}
+
+
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+
+function keyDownHandler(e) {
+    if(e.key == "Right" || e.key == "ArrowRight") {
+        topPressed = true;
+    }
+    else if(e.key == "Left" || e.key == "ArrowLeft") {
+        bottomPressed = true;
+    }
+}
+
+function keyUpHandler(e) {
+    if(e.key == "Right" || e.key == "ArrowRight") {
+        topPressed = false;
+    }
+    else if(e.key == "Left" || e.key == "ArrowLeft") {
+        bottomPressed = false;
+    }
+}
+
+function drawBall(){
+
+    ctx.beginPath();
+    ctx.arc(x, y,ballRadius , 0, Math.PI*2, false);
+    ctx.fillStyle = "black";
+    ctx.fill();
+    ctx.closePath();
+
+} 
+function drawPaddle() {
+    ctx.beginPath();
+    ctx.rect(0, paddleY, paddleWidth, paddleHeight);
+    ctx.fillStyle = "white";
+    ctx.fill();
+    ctx.closePath();
+}
+function drawAIPaddle() {
+    ctx.beginPath();
+    ctx.rect(980, paddleAIY, paddleWidth, paddleHeight);
+    ctx.fillStyle = "white";
+    ctx.fill();
+    ctx.closePath();
+}
+  
+  
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBall();
+    drawPaddle();
+    drawAIPaddle();
+    scoreDisplay();
+    highScoreDisplay();
+    paddleAIY = y+dy-50;
+    
+    if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
+        dx = -dx;
+    }else if(x + dx -ballRadius === 0) {
+        if(y > paddleY && y < paddleY + paddleHeight) {
+        dx = -dx;
+        score +=1;
+        speed -=2;
+        clearInterval(interval);
+        interval = setInterval(draw,speed);
+    }
+    else {  
+    if(score >= highscore){
+        localStorage.setItem('Highscore',score);
+    }
+        alert("GAME OVER \n YOUR SCORE IS "+ score);
+        document.location.reload();
+        clearInterval(interval);
+
+    }
+}
+    if(y + dy > canvas.height-ballRadius || y + dy < ballRadius) {
+        dy = -dy;
+    }
+
+    if(topPressed) {
+        paddleY += 4;
+        if (paddleY + paddleHeight > canvas.height){
+            paddleY = canvas.height - paddleHeight;
+        }
+    }
+    else if(bottomPressed) {
+        paddleY -= 4;
+        if (paddleY < 0){
+            paddleY = 0;
+        }
+    }
+    
+    x += dx;
+    y += dy;
+}   
+var interval = setInterval(draw,speed);
+
+</script>
+
+</body>
+</html>
