@@ -1,0 +1,8 @@
+body{
+    background-color: black;
+}
+ #myCanvas {
+    background-image: url("/assets/images/brick.jpg"); 
+    background-size: cover;
+    display: block;
+   margin: 0 auto; }
